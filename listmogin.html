@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="liststyle.css">
+    <title>Input Field Animation</title>
+</head>
+
+<body>
+    <div class="form">
+        <form action="process_form.php" method="POST" class="form__content" id="jobForm">
+            <h1>نموذج طلب العمل</h1>
+    
+            <!-- اللقب -->
+            <div class="form__box">
+                <input type="text" name="last_name" class="form__input" placeholder="أدخل اللقب" required>
+                <label class="form__label">اللقب</label>
+                <div class="form__shadow"></div>
+            </div>
+    
+            <!-- الاسم -->
+            <div class="form__box">
+                <input type="text" name="first_name" class="form__input" placeholder="ادخل الاسم" required>
+                <label class="form__label">الاسم</label>
+                <div class="form__shadow"></div>
+            </div>
+    
+            <!-- العمر -->
+            <div class="form__box">
+                <input type="number" name="age" class="form__input" placeholder="أدخل العمر" min="18" max="100" required>
+                <label class="form__label">العمر</label>
+                <div class="form__shadow"></div>
+            </div>
+    
+            <!-- العنوان -->
+            <div class="form__box">
+                <input type="text" name="address" class="form__input" placeholder="أدخل العنوان" required>
+                <label class="form__label">العنوان</label>
+                <div class="form__shadow"></div>
+            </div>
+    
+            <!-- البريد الإلكتروني -->
+            <div class="form__box">
+                <input type="email" name="email" class="form__input" placeholder="أدخل الإيمايل" required>
+                <label class="form__label">الإيمايل</label>
+                <div class="form__shadow"></div>
+            </div>
+    
+            <!-- كلمة المرور -->
+            <div class="form__box">
+                <input type="password" name="password" class="form__input" placeholder="أدخل كلمة المرور" minlength="6" required>
+                <label class="form__label">كلمة المرور</label>
+                <div class="form__shadow"></div>
+            </div>
+    
+            <!-- زر التسجيل -->
+            <div class="form__button">
+                <input type="submit" class="form__submit" value="تقديم الطلب">
+            </div>
+        </form>
+        
+        <!-- رابط لعرض الطلبات -->
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="FIN.HTMLstyle="color: white; text-decoration: none; padding: 10px 20px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; backdrop-filter: blur(5px);">عرض الطلبات المقدمة</a>
+        </div>
+        
+        <!-- رسائل النجاح والخطأ -->
+        <div id="message" style="display: none; text-align: center; margin-top: 20px; padding: 15px; border-radius: 10px;"></div>
+    </div>
+    
+    <script>
+        document.getElementById('jobForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const messageDiv = document.getElementById('message');
+            
+            // إظهار رسالة التحميل
+            messageDiv.style.display = 'block';
+            messageDiv.style.background = 'rgba(49, 42, 124, 0.8)';
+            messageDiv.style.color = 'white';
+            messageDiv.textContent = 'جاري إرسال الطلب...';
+            
+            fetch('process_form.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageDiv.style.background = 'rgba(0, 128, 0, 0.8)';
+                    messageDiv.textContent = data.message;
+                    document.getElementById('jobForm').reset();
+                } else {
+                    messageDiv.style.background = 'rgba(255, 0, 0, 0.8)';
+                    let errorMessage = data.message;
+                    if (data.errors && data.errors.length > 0) {
+                        errorMessage += '\n' + data.errors.join('\n');
+                    }
+                    messageDiv.textContent = errorMessage;
+                }
+            })
+            .catch(error => {
+                messageDiv.style.background = 'rgba(255, 0, 0, 0.8)';
+                messageDiv.textContent = 'حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.';
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+
+
+
+</html>
